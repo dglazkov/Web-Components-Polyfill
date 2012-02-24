@@ -7,6 +7,7 @@ if (!window.WebKitShadowRoot) {
     return;
 }
 
+
 function HTMLElementElement(name, tagName, declaration)
 {
     this.name = name;
@@ -23,9 +24,9 @@ HTMLElementElement.prototype = {
     }
 }
 
-function Declaration(name, tagName, constructorName)
+
+function Declaration(name, tagName)
 {
-    this.constructorName = constructorName;
     this.elementPrototype = Object.create(this.prototypeFromTagName(tagName));
     this.element = new HTMLElementElement(name, tagName, this);
     this.element.generatedConstructor = this.generateConstructor();
@@ -61,7 +62,8 @@ Declaration.prototype = {
     morph: function(element)
     {
         element.__proto__ = this.elementPrototype;
-        this.create && this.create.call(element, this.createShadowRoot(element));
+        var shadowRoot = this.createShadowRoot(element);
+        this.create && this.create.call(element, shadowRoot);
     },
     createShadowRoot: function(element)
     {
@@ -70,7 +72,11 @@ Declaration.prototype = {
 
         var shadowRoot = new WebKitShadowRoot(element);
         [].forEach.call(this.template.childNodes, function(node) {
-            shadowRoot.appendChild(node.cloneNode(true));
+            var node = shadowRoot.appendChild(node.cloneNode(true));
+            if (node.tagName == 'STYLE') {
+                document.body.appendChild(node);
+            }
+            console.log(node);
         });
         return shadowRoot;
     },
@@ -81,6 +87,7 @@ Declaration.prototype = {
     }
 }
 
+
 function DeclarationFactory()
 {
     // Hard-bind the following methods to "this":
@@ -88,19 +95,14 @@ function DeclarationFactory()
 }
 
 DeclarationFactory.prototype = {
+    // Called whenever each Declaration instance is created.
+    oncreate: null,
     createDeclaration: function(element)
     {
         var name = element.getAttribute('name');
         if (!name) {
             // FIXME: Make errors more friendly.
             console.error('name attribute is required.')
-            return;
-        }
-        var constructorName = element.getAttribute('constructor');
-        if (!constructorName) {
-            // FIXME: Make it work with implicit constructor.
-            // FIXME: Make errors more friendly.
-            console.error('constructor attribute is required.');
             return;
         }
         var tagName = element.getAttribute('extends');
@@ -110,8 +112,11 @@ DeclarationFactory.prototype = {
             console.error('extends attribute is required.');
             return;
         }
+        var constructorName = element.getAttribute('constructor');
+        if (constructorName)
+            window[constructorName] = declaration.element.generatedConstructor;
+
         var declaration = new Declaration(name, tagName, constructorName);
-        window[constructorName] = declaration.element.generatedConstructor;
         // FIXME: Support multiple scripts?
         var script = element.querySelector('script');
         script && declaration.initialize(script.textContent);
@@ -120,6 +125,7 @@ DeclarationFactory.prototype = {
         this.oncreate && this.oncreate(declaration);
     }
 }
+
 
 function Parser()
 {
@@ -138,6 +144,7 @@ Parser.prototype = {
         }, this);
     }
 }
+
 
 function Loader()
 {
@@ -166,14 +173,14 @@ Loader.prototype = {
     }
 }
 
+
 var loader = new Loader();
 var parser = new Parser();
 loader.onload = parser.parse;
 var factory = new DeclarationFactory();
 parser.onparse = factory.createDeclaration;
 factory.oncreate = function(declaration) {
-    console.log(declaration);
-    [].forEach.call(document.querySelectorAll('[is=' + declaration.element.name + ']'), declaration.morph);
+    [].forEach.call(document.querySelectorAll(declaration.element.extends + '[is=' + declaration.element.name + ']'), declaration.morph);
 }
 
 function nil() {}
