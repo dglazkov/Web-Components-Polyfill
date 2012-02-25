@@ -72,11 +72,7 @@ Declaration.prototype = {
 
         var shadowRoot = new WebKitShadowRoot(element);
         [].forEach.call(this.template.childNodes, function(node) {
-            var node = shadowRoot.appendChild(node.cloneNode(true));
-            if (node.tagName == 'STYLE') {
-                document.body.appendChild(node);
-            }
-            console.log(node);
+            shadowRoot.appendChild(node.cloneNode(true));
         });
         return shadowRoot;
     },
