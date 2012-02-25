@@ -15,14 +15,14 @@ function HTMLElementElement(name, tagName, declaration)
     this.lifecycle = this.lifecycle.bind(declaration);
 }
 
-// FIXME: Make this an HTMLElement.
 HTMLElementElement.prototype = {
+    __proto__: HTMLElement.prototype,
     lifecycle: function(dict)
     {
         // FIXME: Implement more lifecycle methods?
         this.create = dict.create || nil;
     }
-}
+};
 
 
 function Declaration(name, tagName)
@@ -50,9 +50,9 @@ Declaration.prototype = {
         extended.prototype = this.elementPrototype;
         return extended;
     },
-    initialize: function(string)
+    evalScript: function(script)
     {
-        SCRIPT_SHIM[1] = string;
+        SCRIPT_SHIM[1] = script.textContent;
         eval(SCRIPT_SHIM.join(''));
     },
     addTemplate: function(template)
@@ -78,8 +78,7 @@ Declaration.prototype = {
     },
     prototypeFromTagName: function(tagName)
     {
-        // FIXME: Make it work for all tagNames.
-        return HTMLUnknownElement.prototype;
+        return Object.getPrototypeOf(document.createElement(tagName));
     }
 }
 
@@ -113,9 +112,7 @@ DeclarationFactory.prototype = {
             window[constructorName] = declaration.element.generatedConstructor;
 
         var declaration = new Declaration(name, tagName, constructorName);
-        // FIXME: Support multiple scripts?
-        var script = element.querySelector('script');
-        script && declaration.initialize(script.textContent);
+        [].forEach.call(element.querySelectorAll('script'), declaration.evalScript, declaration);
         var template = element.querySelector('template');
         template && declaration.addTemplate(template);
         this.oncreate && this.oncreate(declaration);
