@@ -4,6 +4,9 @@
     <title>Web Components Polyfill Tests</title>
     <link rel="stylesheet" href="../third-party/qunit/qunit/qunit.css">
     <script src="../third-party/qunit/qunit/qunit.js"></script>
+    <script>
+        window.__exported_components_polyfill_scope__ = window.polyfill = {};
+    </script>
     <script src="../src/components-polyfill.js"></script>
     <script src="requirements.js"></script>
 </head>

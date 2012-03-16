@@ -1,4 +1,6 @@
-(function() {
+(function(scope) {
+
+var scope = scope || {};
 
 var SCRIPT_SHIM = ['(function(){\n', 1, '\n}).call(this.element);'];
 
@@ -8,14 +10,14 @@ if (!window.WebKitShadowRoot) {
 }
 
 
-function HTMLElementElement(name, tagName, declaration)
+scope.HTMLElementElement = function(name, tagName, declaration)
 {
     this.name = name;
     this.extends = tagName;
     this.lifecycle = this.lifecycle.bind(declaration);
 }
 
-HTMLElementElement.prototype = {
+scope.HTMLElementElement.prototype = {
     __proto__: HTMLElement.prototype,
     lifecycle: function(dict)
     {
@@ -25,16 +27,16 @@ HTMLElementElement.prototype = {
 };
 
 
-function Declaration(name, tagName)
+scope.Declaration = function(name, tagName)
 {
     this.elementPrototype = Object.create(this.prototypeFromTagName(tagName));
-    this.element = new HTMLElementElement(name, tagName, this);
+    this.element = new scope.HTMLElementElement(name, tagName, this);
     this.element.generatedConstructor = this.generateConstructor();
     // Hard-bind the following methods to "this":
     this.morph = this.morph.bind(this);
 }
 
-Declaration.prototype = {
+scope.Declaration.prototype = {
     generateConstructor: function()
     {
         // FIXME: Test this.
@@ -83,13 +85,13 @@ Declaration.prototype = {
 }
 
 
-function DeclarationFactory()
+scope.DeclarationFactory = function()
 {
     // Hard-bind the following methods to "this":
     this.createDeclaration = this.createDeclaration.bind(this);
 }
 
-DeclarationFactory.prototype = {
+scope.DeclarationFactory.prototype = {
     // Called whenever each Declaration instance is created.
     oncreate: null,
     createDeclaration: function(element)
@@ -111,7 +113,7 @@ DeclarationFactory.prototype = {
         if (constructorName)
             window[constructorName] = declaration.element.generatedConstructor;
 
-        var declaration = new Declaration(name, tagName, constructorName);
+        var declaration = new scope.Declaration(name, tagName, constructorName);
         [].forEach.call(element.querySelectorAll('script'), declaration.evalScript, declaration);
         var template = element.querySelector('template');
         template && declaration.addTemplate(template);
@@ -120,12 +122,12 @@ DeclarationFactory.prototype = {
 }
 
 
-function Parser()
+scope.Parser = function()
 {
     this.parse = this.parse.bind(this);
 }
 
-Parser.prototype = {
+scope.Parser.prototype = {
     // Called for each element that's parsed.
     onparse: null,
     parse: function(string)
@@ -139,12 +141,12 @@ Parser.prototype = {
 }
 
 
-function Loader()
+scope.Loader = function()
 {
     document.addEventListener('DOMContentLoaded', this.onDOMContentLoaded.bind(this));
 }
 
-Loader.prototype = {
+scope.Loader.prototype = {
     // Called for each loaded declaration.
     onload: null,
     onDOMContentLoaded: function()
@@ -167,10 +169,10 @@ Loader.prototype = {
 }
 
 
-var loader = new Loader();
-var parser = new Parser();
+var loader = new scope.Loader();
+var parser = new scope.Parser();
 loader.onload = parser.parse;
-var factory = new DeclarationFactory();
+var factory = new scope.DeclarationFactory();
 parser.onparse = factory.createDeclaration;
 factory.oncreate = function(declaration) {
     [].forEach.call(document.querySelectorAll(declaration.element.extends + '[is=' + declaration.element.name + ']'), declaration.morph);
@@ -178,4 +180,4 @@ factory.oncreate = function(declaration) {
 
 function nil() {}
 
-})();
+})(window.__exported_components_polyfill_scope__);
