@@ -46,7 +46,6 @@ test('.start must supply pre-resolved urls', 3, function() {
     }
     loader.load = loadMethodOverride;
     loader.start();
-
 });
 
 asyncTest('.load must fetch contents of a file and invoke .onload', 1, function() {
@@ -61,4 +60,23 @@ asyncTest('.load must fetch contents of a file and invoke .onload', 1, function(
         start();
     }
     loader.load(url);
+});
+
+asyncTest('end-to-end test', 1, function() {
+    var fixture = document.querySelector('#qunit-fixture');
+    var createComponentsLink = function(url) {
+        var link = fixture.appendChild(document.createElement('link'));
+        link.rel = 'components';
+        link.href = url;
+    }
+
+    createComponentsLink('resources/char.txt')
+
+    var loader = new polyfill.Loader();
+    loader.onload = function(contents)
+    {
+        equal(contents, 'A');
+        start();
+    }
+    loader.start();
 });
