@@ -29,7 +29,6 @@ asyncTest('parsed content must not fetch resources', 1, function() {
         parser.onparse = function(element) {
             var img = element.appendChild(document.createElement('img'));
             img.addEventListener('load', function() {
-                console.log('loaded');
                 ok(false);
                 start();
             });
