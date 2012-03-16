@@ -143,13 +143,13 @@ scope.Parser.prototype = {
 
 scope.Loader = function()
 {
-    document.addEventListener('DOMContentLoaded', this.onDOMContentLoaded.bind(this));
+    this.start = this.start.bind(this);
 }
 
 scope.Loader.prototype = {
     // Called for each loaded declaration.
     onload: null,
-    onDOMContentLoaded: function()
+    start: function()
     {
         [].forEach.call(document.querySelectorAll('link[rel=components]'), function(link) {
             this.load(link.href);
@@ -168,15 +168,21 @@ scope.Loader.prototype = {
     }
 }
 
-
-var loader = new scope.Loader();
-var parser = new scope.Parser();
-loader.onload = parser.parse;
-var factory = new scope.DeclarationFactory();
-parser.onparse = factory.createDeclaration;
-factory.oncreate = function(declaration) {
-    [].forEach.call(document.querySelectorAll(declaration.element.extends + '[is=' + declaration.element.name + ']'), declaration.morph);
+scope.run = function()
+{
+    var loader = new scope.Loader();
+    document.addEventListener('DOMContentLoaded', loader.start);
+    var parser = new scope.Parser();
+    loader.onload = parser.parse;
+    var factory = new scope.DeclarationFactory();
+    parser.onparse = factory.createDeclaration;
+    factory.oncreate = function(declaration) {
+        [].forEach.call(document.querySelectorAll(declaration.element.extends + '[is=' + declaration.element.name + ']'), declaration.morph);
+    }
 }
+
+if (!scope.runManually)
+    scope.run();
 
 function nil() {}
 
