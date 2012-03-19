@@ -99,7 +99,7 @@ test('.prototypeFromTagName must return correct HTML element prototype', functio
     equal(polyfill.Declaration.prototype.prototypeFromTagName.call({}, 'table').constructor, HTMLTableElement);
 });
 
-test('Declaration constructor must correctly initialize instance members', function() {
+test('constructor must correctly initialize instance members', function() {
     var declaration = new polyfill.Declaration('scones', 'div');
     equal(declaration.elementPrototype.constructor, HTMLDivElement);
     equal(declaration.element.name, 'scones');
