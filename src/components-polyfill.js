@@ -110,10 +110,10 @@ scope.DeclarationFactory.prototype = {
             return;
         }
         var constructorName = element.getAttribute('constructor');
+        var declaration = new scope.Declaration(name, tagName, constructorName);
         if (constructorName)
             window[constructorName] = declaration.element.generatedConstructor;
 
-        var declaration = new scope.Declaration(name, tagName, constructorName);
         [].forEach.call(element.querySelectorAll('script'), declaration.evalScript, declaration);
         var template = element.querySelector('template');
         template && declaration.addTemplate(template);
