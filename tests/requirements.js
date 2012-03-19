@@ -1,6 +1,5 @@
 module("Requirements");
 
-test('ShadowRoot is required', 1, function() {
-    var shadowRoot = window.ShadowRoot || window.WebKitShadowRoot;
-    ok(!!shadowRoot);
+test('WebKitShadowRoot is required', 1, function() {
+    ok(!!window.WebKitShadowRoot);
 });
