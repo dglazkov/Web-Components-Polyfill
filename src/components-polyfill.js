@@ -39,7 +39,6 @@ scope.Declaration = function(name, tagName)
 scope.Declaration.prototype = {
     generateConstructor: function()
     {
-        // FIXME: Test this.
         var tagName = this.element.extends;
         var create = this.create;
         var extended = function()

@@ -47,10 +47,10 @@ test('.createDeclaration must require "extends" attribute', function() {
 });
 
 test('.createDeclaration must create new Declaration instance', function() {
-    this.declaration = null;
     var element = document.createElement('div');
     element.setAttribute('name', 'foo');
     element.setAttribute('extends', 'div');
+    this.declaration = null;
     this.declarationFactory.createDeclaration(element);
     equal(this.declaration.constructor, polyfill.Declaration);
 });
