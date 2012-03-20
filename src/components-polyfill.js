@@ -22,7 +22,10 @@ scope.HTMLElementElement.prototype = {
     lifecycle: function(dict)
     {
         // FIXME: Implement more lifecycle methods?
-        this.create = dict.create || nil;
+        //changed create to created to better reflect the web components spec. @theunilife
+        this.created = dict.created || nil;
+        //created inserted event. @theunilife
+        this.inserted = dict.inserted || nil;
     }
 };
 
@@ -40,7 +43,7 @@ scope.Declaration.prototype = {
     generateConstructor: function()
     {
         var tagName = this.element.extends;
-        var create = this.create;
+        var create = this.created;
         var extended = function()
         {
             var element = document.createElement(tagName);
@@ -59,12 +62,14 @@ scope.Declaration.prototype = {
     addTemplate: function(template)
     {
         this.template = template;
+
     },
     morph: function(element)
     {
         element.__proto__ = this.elementPrototype;
         var shadowRoot = this.createShadowRoot(element);
-        this.create && this.create.call(element, shadowRoot);
+        //Fire created event.
+        this.created && this.created.call(element, shadowRoot);
     },
     createShadowRoot: function(element)
     {
@@ -136,6 +141,7 @@ scope.Parser.prototype = {
         [].forEach.call(doc.querySelectorAll('element'), function(element) {
             this.onparse && this.onparse(element);
         }, this);
+        
     }
 }
 
@@ -177,6 +183,8 @@ scope.run = function()
     parser.onparse = factory.createDeclaration;
     factory.oncreate = function(declaration) {
         [].forEach.call(document.querySelectorAll(declaration.element.extends + '[is=' + declaration.element.name + ']'), declaration.morph);
+        //Fire inserted event.
+        declaration.inserted && declaration.inserted.call(declaration.element);
     }
 }
 

@@ -6,6 +6,16 @@
 </head>
 <body>
 <element name="news" extends="ul">
+    <script>
+        this.lifecycle({
+            created: function(){
+                console.log("On Create Fired");
+            },
+            inserted: function(){
+                console.log("On inserted Fired");
+            }
+        });
+    </script>
     <template>
         <style scoped>
             div.breaking {
@@ -18,6 +28,7 @@
                 border: 1px solid Cyan;
             }
         </style>
+
         <div class="breaking">
             <h2>Breaking Stories</h2>
             <ul>
