@@ -24,7 +24,6 @@ scope.HTMLElementElement.prototype = {
         // FIXME: Implement more lifecycle methods?
         //changed create to created to better reflect the web components spec. @theunilife
         this.created = dict.created || nil;
-        //created inserted event. @theunilife
         this.inserted = dict.inserted || nil;
     }
 };
@@ -70,6 +69,7 @@ scope.Declaration.prototype = {
         var shadowRoot = this.createShadowRoot(element);
         //Fire created event.
         this.created && this.created.call(element, shadowRoot);
+        this.inserted && this.inserted.call(element, shadowRoot);
     },
     createShadowRoot: function(element)
     {
@@ -183,8 +183,6 @@ scope.run = function()
     parser.onparse = factory.createDeclaration;
     factory.oncreate = function(declaration) {
         [].forEach.call(document.querySelectorAll(declaration.element.extends + '[is=' + declaration.element.name + ']'), declaration.morph);
-        //Fire inserted event.
-        declaration.inserted && declaration.inserted.call(declaration.element);
     }
 }
 

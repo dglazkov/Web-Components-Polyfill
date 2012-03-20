@@ -9,6 +9,9 @@ test('constructor must initialize instance members.', function() {
 test('constructor must bind lifecycle method to declaration.', function() {
     var mockDeclaration = {};
     var htmlElementElement = new polyfill.HTMLElementElement('foo', 'bar', mockDeclaration);
-    htmlElementElement.lifecycle({ create: 'baz'});
-    equal(mockDeclaration.create, 'baz');
+    htmlElementElement.lifecycle({ created: 'baz'});
+    equal(mockDeclaration.created, 'baz');
+    //check inserted life cycle event.
+    htmlElementElement.lifecycle({ inserted: 'foo'});
+    equal(mockDeclaration.inserted, 'foo');
 });
