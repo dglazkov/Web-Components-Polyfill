@@ -164,10 +164,18 @@ scope.Loader.prototype = {
     {
         var request = new XMLHttpRequest();
         var loader = this;
+    
         request.open('GET', url);
         // FIXME: Support loading errors.
-        request.addEventListener('load', function() {
-            loader.onload && loader.onload(request.response);
+        request.addEventListener('readystatechange', function(e) {
+            if(request.readyState === 4){
+                if ( request.status >= 200 && request.status < 300 || request.status === 304 ){
+                    loader.onload && loader.onload(request.response);
+                } else {
+                    console.error("Failed to fetch resource: " + request.statusText);
+                    loader.onload && loader.onload(request.statusText);
+                }
+            }
         });
         request.send();
     }
