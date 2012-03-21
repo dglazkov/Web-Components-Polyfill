@@ -154,6 +154,7 @@ scope.Loader = function()
 scope.Loader.prototype = {
     // Called for each loaded declaration.
     onload: null,
+    onerror: null,
     start: function()
     {
         [].forEach.call(document.querySelectorAll('link[rel=components]'), function(link) {
@@ -166,14 +167,12 @@ scope.Loader.prototype = {
         var loader = this;
     
         request.open('GET', url);
-        // FIXME: Support loading errors.
         request.addEventListener('readystatechange', function(e) {
             if(request.readyState === 4){
                 if ( request.status >= 200 && request.status < 300 || request.status === 304 ){
                     loader.onload && loader.onload(request.response);
                 } else {
-                    console.error("Failed to fetch resource: " + request.statusText);
-                    loader.onload && loader.onload(request.statusText);
+                    loader.onerror && loader.onerror(request.status, request);
                 }
             }
         });
