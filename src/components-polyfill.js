@@ -42,13 +42,13 @@ scope.Declaration.prototype = {
     generateConstructor: function()
     {
         var tagName = this.element.extends;
-        var create = this.created;
+        var created = this.created;
         var extended = function()
         {
             var element = document.createElement(tagName);
             extended.prototype.__proto__ = element.__proto__;
             element.__proto__ = extended.prototype;
-            create.call(element);
+            created.call(element);
         }
         extended.prototype = this.elementPrototype;
         return extended;
