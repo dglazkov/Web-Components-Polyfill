@@ -24,7 +24,7 @@ test('.generateConstructor must create a swizzled-prototype, HTMLElement-derived
         element: {
             extends: 'div'
         },
-        create: function() {
+        created: function() {
             count = 0;
         },
         elementPrototype: mockElement.prototype
@@ -57,7 +57,7 @@ test('.morph must swizzle prototype of an existing object', 4, function() {
             strictEqual(e, element);
             return 'foo';
         },
-        create: function(shadowRoot) {
+        created: function(shadowRoot) {
             strictEqual(this, element);
             equal(shadowRoot, 'foo');
         }

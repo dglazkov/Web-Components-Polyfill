@@ -22,7 +22,9 @@ scope.HTMLElementElement.prototype = {
     lifecycle: function(dict)
     {
         // FIXME: Implement more lifecycle methods?
-        this.create = dict.create || nil;
+        //changed create to created to better reflect the web components spec. @theunilife
+        this.created = dict.created || nil;
+        this.inserted = dict.inserted || nil;
     }
 };
 
@@ -40,13 +42,13 @@ scope.Declaration.prototype = {
     generateConstructor: function()
     {
         var tagName = this.element.extends;
-        var create = this.create;
+        var created = this.created;
         var extended = function()
         {
             var element = document.createElement(tagName);
             extended.prototype.__proto__ = element.__proto__;
             element.__proto__ = extended.prototype;
-            create.call(element);
+            created.call(element);
         }
         extended.prototype = this.elementPrototype;
         return extended;
@@ -59,12 +61,15 @@ scope.Declaration.prototype = {
     addTemplate: function(template)
     {
         this.template = template;
+
     },
     morph: function(element)
     {
         element.__proto__ = this.elementPrototype;
         var shadowRoot = this.createShadowRoot(element);
-        this.create && this.create.call(element, shadowRoot);
+        //Fire created event.
+        this.created && this.created.call(element, shadowRoot);
+        this.inserted && this.inserted.call(element, shadowRoot);
     },
     createShadowRoot: function(element)
     {
@@ -136,6 +141,7 @@ scope.Parser.prototype = {
         [].forEach.call(doc.querySelectorAll('element'), function(element) {
             this.onparse && this.onparse(element);
         }, this);
+        
     }
 }
 
@@ -148,6 +154,7 @@ scope.Loader = function()
 scope.Loader.prototype = {
     // Called for each loaded declaration.
     onload: null,
+    onerror: null,
     start: function()
     {
         [].forEach.call(document.querySelectorAll('link[rel=components]'), function(link) {
@@ -158,10 +165,16 @@ scope.Loader.prototype = {
     {
         var request = new XMLHttpRequest();
         var loader = this;
+    
         request.open('GET', url);
-        // FIXME: Support loading errors.
-        request.addEventListener('load', function() {
-            loader.onload && loader.onload(request.response);
+        request.addEventListener('readystatechange', function(e) {
+            if(request.readyState === 4){
+                if ( request.status >= 200 && request.status < 300 || request.status === 304 ){
+                    loader.onload && loader.onload(request.response);
+                } else {
+                    loader.onerror && loader.onerror(request.status, request);
+                }
+            }
         });
         request.send();
     }

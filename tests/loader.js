@@ -62,6 +62,20 @@ asyncTest('.load must fetch contents of a file and invoke .onload', 1, function(
     loader.load(url);
 });
 
+asyncTest('.load must fail gracefully on file load and invoke .onerror', 1, function(){
+    var a = document.createElement('a');
+    a.href = 'cant/find.me';
+    var url = a.href;
+
+    var loader = new polyfill.Loader();
+    loader.onerror = function(status, xhr)
+    {
+        equal(status, 404);
+        start();
+    }
+    loader.load(url);
+});
+
 asyncTest('end-to-end test', 1, function() {
     var fixture = document.querySelector('#qunit-fixture');
     var createComponentsLink = function(url) {
