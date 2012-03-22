@@ -65,7 +65,9 @@ scope.Declaration.prototype = {
     },
     morph: function(element)
     {
-        element.__proto__ = this.elementPrototype;
+        // FIXME: We shouldn't be updating __proto__ like this on each morph.
+        this.element.generatedConstructor.prototype.__proto__ = document.createElement(this.element.extends);
+        element.__proto__ = this.element.generatedConstructor.prototype;
         var shadowRoot = this.createShadowRoot(element);
         //Fire created event.
         this.created && this.created.call(element, shadowRoot);

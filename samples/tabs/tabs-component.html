@@ -144,11 +144,11 @@
     <script>
 
         this.lifecycle({
-            create: function(root) {
+            created: function(root) {
                 this.root = root;
                 this.currentIndex = 1;
                 this.moreOpened = false;
-                this.style = this.root.querySelector('style').sheet;
+                this.outerStylesheet = this.root.querySelector('style').sheet;
                 this.current = this.root.querySelector('content.current');
                 var overflow = this.root.querySelector('.overflow');
                 overflow.addEventListener('click', this.onClickOverflow.bind(this));
@@ -209,8 +209,9 @@
             },
             updateCurrent: function() {
                 this.current.select = 'section:nth-of-type(' + this.currentIndex + ')';
-                this.style.deleteRule(0);
-                this.style.insertRule('h2:nth-of-type(' + this.currentIndex + '){' + CURRENT_TAB_STYLE + '}', 0);
+                var styleAttributes = this.outerStylesheet.cssRules[0].style.cssText;
+                this.outerStylesheet.deleteRule(0);
+                this.outerStylesheet.insertRule('h2:nth-of-type(' + this.currentIndex + '){' + styleAttributes + '}', 0);
             },
             sectionCount: function() {
                 return this.root.host.querySelectorAll('section').length;

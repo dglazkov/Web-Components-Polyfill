@@ -47,13 +47,16 @@ test('.addTemplate must set the this.template value', function() {
 });
 
 test('.morph must swizzle prototype of an existing object', 4, function() {
-    var mockElementPrototype = {};
+    var mockElementPrototype = document.createElement('div');
     var element = {};
     var shadowRootCreated = false;
     polyfill.Declaration.prototype.morph.call({
-        elementPrototype: mockElementPrototype,
+        element: {
+            generatedConstructor: function() {},
+            extends: 'div'
+        },
         createShadowRoot: function(e) {
-            strictEqual(e.__proto__, mockElementPrototype);
+            equal(e.tagName, 'DIV');
             strictEqual(e, element);
             return 'foo';
         },
