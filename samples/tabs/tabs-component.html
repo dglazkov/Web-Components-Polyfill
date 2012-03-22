@@ -143,6 +143,8 @@
     </template>
     <script>
 
+        if (this !== window) {
+
         this.lifecycle({
             created: function(root) {
                 this.root = root;
@@ -229,6 +231,8 @@
                 }
                 this.updateCurrent();
             }
+        }
+
         }
 
     </script>
