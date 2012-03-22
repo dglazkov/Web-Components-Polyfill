@@ -22,7 +22,7 @@ scope.HTMLElementElement.prototype = {
     lifecycle: function(dict)
     {
         // FIXME: Implement more lifecycle methods?
-        //changed create to created to better reflect the web components spec. @theunilife
+        //changed create to created to better reflect the web components spec.
         this.created = dict.created || nil;
         this.inserted = dict.inserted || nil;
     }
@@ -54,9 +54,28 @@ scope.Declaration.prototype = {
         return extended;
     },
     evalScript: function(script)
-    {
-        SCRIPT_SHIM[1] = script.textContent;
-        eval(SCRIPT_SHIM.join(''));
+    {   
+        if(script.textContent == ''){
+            var request = new XMLHttpRequest();
+            var code = '';
+            request.open('GET', script.src, false);
+
+            request.addEventListener('readystatechange', function(){
+                if(request.readyState === 4){
+                    if ( request.status >= 200 && request.status < 300 || request.status === 304 ){
+                        SCRIPT_SHIM[1] = request.responseText;
+                    }
+                }
+            });
+            try{
+                request.send();
+            } catch(e){
+                console.error("Unable to load script.");
+            }
+        } else {
+            SCRIPT_SHIM[1] = script.textContent;
+        }
+        eval(SCRIPT_SHIM.join(" "));
     },
     addTemplate: function(template)
     {

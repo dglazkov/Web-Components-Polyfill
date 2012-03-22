@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Twitter Feed Component</title>
+</head>
+<body>
+<element name="x-twitterfeed" extends="section">
+	<script src="../js/jquery-1.7.1.min.js"></script>
+	<script>
+		var username = "";
+		var title = "";
+
+		this.lifecycle({
+			created: function(shadowRoot){
+				username = this.getAttribute('data-username');
+				tweets = this.getAttribute('data-tweet-max');
+				title = shadowRoot.querySelector('#title').querySelector('h3');
+
+				try{
+					twitterFeed.prototype.init(shadowRoot, username, tweets);
+				} catch(e){
+					console.error(e);
+				}
+				
+			}
+		});
+
+		twitterFeed          = this.generatedConstructor;
+		twitterFeed.username = null;
+		twitterFeed.tweetMax = 20;
+		twitterFeed.root     = null;
+
+		//initialization function gets the twitter feed and sets header text.
+		twitterFeed.prototype.init = function(root, username, tweets) {
+			this.root     = root;
+			this.username = username;
+			this.tweetMax = tweets == null ? 20 : tweets;
+			if(this.username != ""){
+				title.innerHTML = this.username + "'s Twitter Feed";
+				var tweets = this._getTweets();
+			} else {
+				throw "No username set.";
+			}	
+		};
+
+		//ajax call to twitter api for tweets
+		twitterFeed.prototype._getTweets = function() {
+			var username = this.username;
+			var tweetMax = this.tweetMax;
+			var url = 'http://twitter.com/statuses/user_timeline/'+ username +'.json?count=' + tweetMax;
+			var request = new XMLHttpRequest();
+			request.open('GET', url);
+			request.setRequestHeader("Accept", "application/jsonp");
+
+			request.addEventListener('readystatechange', function(e){
+				if(request.readyState === 4){
+					if ( request.status >= 200 && request.status < 300 || request.status === 304 ){
+	                    console.log(request.responseText);
+	                } else {
+
+	                }
+				}
+			});
+
+			request.send(null);
+		};
+	</script>
+
+	<template>
+		<header id="title">
+			<h3></h3>
+		</header>
+		<ul>
+			<content></content>
+			<li><a href="#">@kbsurfer</a> post 1</li>
+		</ul>
+	</template>
+</element> 
+</component>
+</body>
+</html

@@ -40,6 +40,13 @@ test('.evalScript must attempt to evaluate script, wrapped in a shim', function(
     equal(this.codeEvaluated, '(function(){\nfoo\n}).call(this.element);');
 });
 
+test('.evalScript must attempt to load an external script if src attribute is used.', function() {
+    var script = document.createElement('script');
+    script.src = 'resources/loadme.js';
+    polyfill.Declaration.prototype.evalScript.call(null,script);
+    equal(this.codeEvaluated, '(function(){\nbar\n}).call(this.element);');
+});
+
 test('.addTemplate must set the this.template value', function() {
     var mockDeclaration = {};
     polyfill.Declaration.prototype.addTemplate.call(mockDeclaration, 'foo');
