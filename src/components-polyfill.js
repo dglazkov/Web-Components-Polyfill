@@ -57,7 +57,7 @@ scope.Declaration.prototype = {
     {   
         //FIXME: Add support for external js loading.
         SCRIPT_SHIM[1] = script.textContent;
-        eval(SCRIPT_SHIM.join(" "));
+        eval(SCRIPT_SHIM.join(''));
     },
     addTemplate: function(template)
     {
