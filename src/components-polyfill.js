@@ -55,26 +55,8 @@ scope.Declaration.prototype = {
     },
     evalScript: function(script)
     {   
-        if(script.textContent == ''){
-            var request = new XMLHttpRequest();
-            var code = '';
-            request.open('GET', script.src, false);
-
-            request.addEventListener('readystatechange', function(){
-                if(request.readyState === 4){
-                    if ( request.status >= 200 && request.status < 300 || request.status === 304 ){
-                        SCRIPT_SHIM[1] = request.responseText;
-                    }
-                }
-            });
-            try{
-                request.send();
-            } catch(e){
-                console.error("Unable to load script.");
-            }
-        } else {
-            SCRIPT_SHIM[1] = script.textContent;
-        }
+        //FIXME: Add support for external js loading.
+        SCRIPT_SHIM[1] = script.textContent;
         eval(SCRIPT_SHIM.join(" "));
     },
     addTemplate: function(template)
@@ -207,6 +189,9 @@ scope.run = function()
     document.addEventListener('DOMContentLoaded', loader.start);
     var parser = new scope.Parser();
     loader.onload = parser.parse;
+    loader.onerror = function(status, resp){
+        console.error("Unable to load component: Status " + status + " - " + resp.statusText);
+    };
     var factory = new scope.DeclarationFactory();
     parser.onparse = factory.createDeclaration;
     factory.oncreate = function(declaration) {
