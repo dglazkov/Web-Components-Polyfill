@@ -21,10 +21,12 @@ scope.HTMLElementElement.prototype = {
     __proto__: HTMLElement.prototype,
     lifecycle: function(dict)
     {
-        // FIXME: Implement more lifecycle methods?
-        //changed create to created to better reflect the web components spec.
         this.created = dict.created || nil;
         this.inserted = dict.inserted || nil;
+        this.attributeChanged = dict.attributeChanged || nil;
+
+        // TODO: Implement remove lifecycle methods.
+        //this.removed = dict.removed || nil;
     }
 };
 
@@ -70,19 +72,39 @@ scope.Declaration.prototype = {
         this.element.generatedConstructor.prototype.__proto__ = document.createElement(this.element.extends);
         element.__proto__ = this.element.generatedConstructor.prototype;
         var shadowRoot = this.createShadowRoot(element);
-        //Fire created event.
+
+        // Fire created event.
         this.created && this.created.call(element, shadowRoot);
         this.inserted && this.inserted.call(element, shadowRoot);
+
+        // Setup mutation observer for attribute changes.
+        if (this.attributeChanged) {
+          var observer = new WebKitMutationObserver(function(mutations) {
+            mutations.forEach(function(m) {
+              this.attributeChanged(m.attributeName, m.oldValue,
+                                    m.target.getAttribute(m.attributeName));
+            }.bind(this));
+          }.bind(this));
+
+          // TOOD: spec isn't clear if it's changes to the custom attribute
+          // or any attribute in the subtree.
+          observer.observe(shadowRoot.host, {
+            attributes: true,
+            attributeOldValue: true
+          });
+        }
     },
     createShadowRoot: function(element)
     {
-        if (!this.template)
-            return;
+        if (!this.template) {
+          return;
+        }
 
         var shadowRoot = new WebKitShadowRoot(element);
         [].forEach.call(this.template.childNodes, function(node) {
             shadowRoot.appendChild(node.cloneNode(true));
         });
+
         return shadowRoot;
     },
     prototypeFromTagName: function(tagName)
