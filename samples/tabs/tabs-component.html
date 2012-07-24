@@ -7,8 +7,7 @@
 <body>
 <element name="tabs" extends="article" constructor="TabsControl">
     <template>
-        <style>
-
+        <style id="exportedStyle">
             h2:nth-of-type(1) {
                 background: white;
                 color: black;
@@ -50,24 +49,24 @@
         <style>
             @import url(http://fonts.googleapis.com/css?family=Open+Sans:400,300,600);
         </style>
-        <style scoped>
+        <style>
             div.container {
-                display: -webkit-flexbox;
+                display: -webkit-flex;
                 -webkit-flex-direction: column;
-                -webkit-flex-align: stretch;
+                -webkit-align-items: stretch;
                 background: -webkit-linear-gradient(rgb(230, 230, 230), rgb(200, 200, 200));
                 padding: 10px; -webkit-font-smoothing: antialiased;
             }
 
             .tab-strip {
-                display: -webkit-flexbox;
-                -webkit-flex-pack: justify;
+                display: -webkit-flex;
+                -webkit-justify-content: space-between;
                 padding: 0 5px;
                 -webkit-user-select: none;
             }
 
             .tab-wrapper {
-                display: -webkit-flexbox;
+                display: -webkit-flex;
                 height: 30px;
             }
 
@@ -80,8 +79,8 @@
             }
 
             div.more {
-                display: -webkit-flexbox;
-                -webkit-flex-pack: justify;
+                display: -webkit-flex;
+                -webkit-justify-content: space-between;
                 padding: 0 5px;
                 -webkit-user-select: none;
             }
@@ -151,9 +150,13 @@
         this.lifecycle({
             created: function(root) {
                 this.root = root;
+
+                var exportedStyle = this.root.querySelector('#exportedStyle');
+                exportedStyle = this.appendChild(exportedStyle);
+                this.outerStylesheet = exportedStyle.sheet;
+
                 this.currentIndex = 1;
                 this.moreOpened = false;
-                this.outerStylesheet = this.root.querySelector('style').sheet;
                 this.current = this.root.querySelector('content.current');
                 var overflow = this.root.querySelector('.overflow');
                 overflow.addEventListener('click', this.onClickOverflow.bind(this));
