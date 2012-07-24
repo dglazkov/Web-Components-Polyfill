@@ -1,6 +1,6 @@
 (function(scope) {
 
-var scope = scope || {};
+scope = scope || {};
 
 var SCRIPT_SHIM = ['(function(){\n', 1, '\n}).call(this.element);'];
 
@@ -12,9 +12,9 @@ if (!window.WebKitShadowRoot) {
 
 scope.HTMLElementElement = function(name, tagName, declaration) {
   this.name = name;
-  this.extends = tagName;
+  this.extendsTagName = tagName;
   this.lifecycle = this.lifecycle.bind(declaration);
-}
+};
 
 scope.HTMLElementElement.prototype = {
   __proto__: HTMLElement.prototype,
@@ -35,19 +35,19 @@ scope.Declaration = function(name, tagName) {
   this.element.generatedConstructor = this.generateConstructor();
   // Hard-bind the following methods to "this":
   this.morph = this.morph.bind(this);
-}
+};
 
 scope.Declaration.prototype = {
 
   generateConstructor: function() {
-    var tagName = this.element.extends;
+    var tagName = this.element.extendsTagName;
     var created = this.created;
     var extended = function() {
       var element = document.createElement(tagName);
       extended.prototype.__proto__ = element.__proto__;
       element.__proto__ = extended.prototype;
       created.call(element);
-    }
+    };
     extended.prototype = this.elementPrototype;
     return extended;
   },
@@ -64,7 +64,7 @@ scope.Declaration.prototype = {
 
   morph: function(element) {
     // FIXME: We shouldn't be updating __proto__ like this on each morph.
-    this.element.generatedConstructor.prototype.__proto__ = document.createElement(this.element.extends);
+    this.element.generatedConstructor.prototype.__proto__ = document.createElement(this.element.extendsTagName);
     element.__proto__ = this.element.generatedConstructor.prototype;
     var shadowRoot = this.createShadowRoot(element);
 
@@ -92,7 +92,7 @@ scope.Declaration.prototype = {
 
   createShadowRoot: function(element) {
     if (!this.template) {
-      return;
+      return undefined;
     }
 
     var shadowRoot = new WebKitShadowRoot(element);
@@ -107,13 +107,13 @@ scope.Declaration.prototype = {
   prototypeFromTagName: function(tagName) {
     return Object.getPrototypeOf(document.createElement(tagName));
   }
-}
+};
 
 
 scope.DeclarationFactory = function() {
   // Hard-bind the following methods to "this":
   this.createDeclaration = this.createDeclaration.bind(this);
-}
+};
 
 scope.DeclarationFactory.prototype = {
   // Called whenever each Declaration instance is created.
@@ -123,7 +123,7 @@ scope.DeclarationFactory.prototype = {
     var name = element.getAttribute('name');
     if (!name) {
       // FIXME: Make errors more friendly.
-      console.error('name attribute is required.')
+      console.error('name attribute is required.');
       return;
     }
     var tagName = element.getAttribute('extends');
@@ -145,12 +145,12 @@ scope.DeclarationFactory.prototype = {
     template && declaration.addTemplate(template);
     this.oncreate && this.oncreate(declaration);
   }
-}
+};
 
 
 scope.Parser = function() {
   this.parse = this.parse.bind(this);
-}
+};
 
 scope.Parser.prototype = {
   // Called for each element that's parsed.
@@ -163,12 +163,12 @@ scope.Parser.prototype = {
       this.onparse && this.onparse(element);
     }, this);
   }
-}
+};
 
 
 scope.Loader = function() {
   this.start = this.start.bind(this);
-}
+};
 
 scope.Loader.prototype = {
   // Called for each loaded declaration.
@@ -197,7 +197,7 @@ scope.Loader.prototype = {
     });
     request.send();
   }
-}
+};
 
 scope.run = function() {
   var loader = new scope.Loader();
@@ -212,11 +212,12 @@ scope.run = function() {
   var factory = new scope.DeclarationFactory();
   parser.onparse = factory.createDeclaration;
   factory.oncreate = function(declaration) {
-    [].forEach.call(document.querySelectorAll(
-        declaration.element.extends + '[is=' + declaration.element.name +
-        ']'), declaration.morph);
-  }
-}
+    [].forEach.call(
+      document.querySelectorAll(declaration.element.extendsTagName +
+                                '[is=' + declaration.element.name + ']'),
+      declaration.morph);
+  };
+};
 
 if (!scope.runManually) {
   scope.run();
