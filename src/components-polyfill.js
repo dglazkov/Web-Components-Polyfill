@@ -96,6 +96,7 @@ scope.Declaration.prototype = {
     }
 
     var shadowRoot = new WebKitShadowRoot(element);
+    shadowRoot.host = element;
     [].forEach.call(this.template.childNodes, function(node) {
       shadowRoot.appendChild(node.cloneNode(true));
     });
