@@ -2,8 +2,6 @@
 
 scope = scope || {};
 
-var SCRIPT_SHIM = ['(function(){\n', 1, '\n}).call(this.element);'];
-
 if (!window.WebKitShadowRoot) {
   console.error('Shadow DOM support is required.');
   return;
@@ -54,8 +52,7 @@ scope.Declaration.prototype = {
 
   evalScript: function(script) {
     //FIXME: Add support for external js loading.
-    SCRIPT_SHIM[1] = script.textContent;
-    eval(SCRIPT_SHIM.join(''));
+    Function(script.textContent).call(this.element);
   },
 
   addTemplate: function(template) {
