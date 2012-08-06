@@ -1,21 +1,3 @@
-module('Declaration', {
-    setup: function() {
-        this.actualEval = window.eval;
-        window.eval = function(code) {
-            this.codeEvaluated = code;
-        }.bind(this);
-        this.actualHTMLElementElement = polyfill.HTMLElementElement;
-        polyfill.HTMLElementElement = function(name, tagName, declaration) {
-            this.name = name;
-            this.extends = tagName;
-            this.declaration = declaration;
-        }
-    },
-    teardown: function() {
-        polyfill.HTMLElementElement = this.actualHTMLElementElement;
-        window.eval = this.actualEval;
-    }
-});
 
 test('.generateConstructor must create a swizzled-prototype, HTMLElement-derived object', function() {
     var mockElement = function() {}
