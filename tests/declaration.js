@@ -5,11 +5,11 @@ test('.generateConstructor must create a swizzled-prototype, HTMLElement-derived
     var count = 0;
     var result = new (polyfill.Declaration.prototype.generateConstructor.call({
         element: {
-            extendsTagName: 'div',
-			created: function() {
-				count = 0;
-			}
+            extendsTagName: 'div'
         },
+		created: function() {
+			count = 0;
+		},
         elementPrototype: mockElement.prototype
     }));
     equal(result.__proto__.constructor, mockElement);
