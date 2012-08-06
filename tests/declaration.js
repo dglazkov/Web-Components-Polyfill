@@ -39,7 +39,7 @@ test('.evalScript must attempt to evaluate script, wrapped in a shim', function(
     polyfill.Declaration.prototype.evalScript.call(context, {
         textContent: 'this.ok = true;'
     });
-    equal(context.element.ok, true);
+    ok(context.element.ok);
 });
 
 test('.addTemplate must set the this.template value', function() {
