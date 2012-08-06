@@ -3,7 +3,7 @@ module('HTMLElementElement');
 test('constructor must initialize instance members.', function() {
     var htmlElementElement = new polyfill.HTMLElementElement('foo', 'bar', {});
     equal(htmlElementElement.name, 'foo');
-    equal(htmlElementElement.extends, 'bar');
+    equal(htmlElementElement.extendsTagName, 'bar');
 });
 
 test('constructor must bind lifecycle method to declaration.', function() {
