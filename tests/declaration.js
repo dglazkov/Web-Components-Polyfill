@@ -22,7 +22,7 @@ test('.generateConstructor must create a swizzled-prototype, HTMLElement-derived
     var count = 0;
     var result = new (polyfill.Declaration.prototype.generateConstructor.call({
         element: {
-            extends: 'div',
+            extendsTagName: 'div',
 			created: function() {
 				count = 0;
 			}
@@ -33,11 +33,13 @@ test('.generateConstructor must create a swizzled-prototype, HTMLElement-derived
     equal(result.__proto__.__proto__.constructor, HTMLDivElement);
 });
 
+
 test('.evalScript must attempt to evaluate script, wrapped in a shim', function() {
-    polyfill.Declaration.prototype.evalScript.call({}, {
-        textContent: 'foo'
+	var context = {element: {ok: false}};
+    polyfill.Declaration.prototype.evalScript.call(context, {
+        textContent: 'this.ok = true;'
     });
-    equal(this.codeEvaluated, '(function(){\nfoo\n}).call(this.element);');
+    equal(context.element.ok, true);
 });
 
 test('.addTemplate must set the this.template value', function() {
@@ -53,7 +55,7 @@ test('.morph must swizzle prototype of an existing object', 4, function() {
     polyfill.Declaration.prototype.morph.call({
         element: {
             generatedConstructor: function() {},
-            extends: 'div'
+            extendsTagName: 'div'
         },
         createShadowRoot: function(e) {
             equal(e.tagName, 'DIV');
@@ -106,7 +108,7 @@ test('constructor must correctly initialize instance members', function() {
     var declaration = new polyfill.Declaration('scones', 'div');
     equal(declaration.elementPrototype.constructor, HTMLDivElement);
     equal(declaration.element.name, 'scones');
-    equal(declaration.element.extends, 'div');
+    equal(declaration.element.extendsTagName, 'div');
     strictEqual(declaration.element.declaration, declaration);
     ok(!!declaration.element.generatedConstructor);
 });
