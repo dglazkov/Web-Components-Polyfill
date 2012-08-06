@@ -1,3 +1,4 @@
+module('Declaration');
 
 test('.generateConstructor must create a swizzled-prototype, HTMLElement-derived object', function() {
     var mockElement = function() {}
