@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Accordion Component</title>
+	<link rel="stylesheet" type="text/css" href="../../src/debug.css">
+</head>
+<body>
+	<element name="accordion" extends="div">
+		<template>
+			<content></content>
+		</template>
+		<script>
+			if (this !== window) {
+				this.lifecycle({
+					created: function(root) {
+						this.root = root;
+						var selectedSection = this.selectedSection = this.querySelector('section');
+						setTimeout(function() {
+							selectedSection.selected = true;
+						}, 10);
+
+						// Attach listeners
+						this.addEventListener('click', function(event) {
+							var clickedSection = event.target.parentElement;
+							if (clickedSection.selected === false) {
+								selectedSection.selected = false;
+								clickedSection.selected = true;
+								selectedSection = clickedSection;
+							}
+						});
+					}
+				});
+			}
+		</script>
+	</element>
+	<element name="accordion-section" extends="section">
+		<template>
+			<style scoped>
+				header {
+					cursor: pointer;
+				}
+				div {
+					display: none;
+				}
+				div.selected {
+					display: block;
+				}
+			</style>
+			<header>
+				<content select="h2:first-of-type"></content>
+			</header>
+			<div>
+				<content></content>
+			</div>
+		</template>
+		<script>
+			if (this !== window) {
+				this.lifecycle({
+					created: function(root) {
+						// Define instance properties
+						Object.defineProperties(this, {
+							_root: {
+								value: root
+							},
+							_content: {
+								value: root.querySelector('div')
+							},
+							_selected: {
+								value: false,
+								writable: true
+							}
+						});
+					}
+				});
+
+				this.generatedConstructor.prototype = Object.create(Object.prototype, {
+					selected: {
+						get: function() {
+							return this._selected;
+						},
+						set: function(selected) {
+							if (this._selected !== selected) {
+								if (selected === true) {
+									this.classList.add('selected');
+									this._content.classList.add('selected');
+								}
+								else {
+									this.classList.remove('selected');
+									this._content.classList.remove('selected');
+								}
+
+								this._selected = selected;
+							}
+						},
+						enumerable: true,
+						configurable: true
+					}
+				});
+			}
+		</script>
+	</element>
+</body>
+</html>
