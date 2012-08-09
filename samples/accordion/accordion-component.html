@@ -14,20 +14,22 @@
 				this.lifecycle({
 					created: function(root) {
 						this._root = root;
-						var selectedSection = this._selectedSection = this.querySelector('section');
+						this._selectedSection = this.querySelector('section');
 
 						// This setTimeout is to give the child sections time to upgrade to accordion-sections. The spec describes an 'upgrade' DOM event that should fire, but it doesn't, so this is a hack for the time being.
+						var selectedSection = this._selectedSection;
 						setTimeout(function() {
 							selectedSection.selected = true;
 						}, 10);
 
 						// Attach listeners
 						this.addEventListener('click', function(event) {
-							var clickedSection = event.target.parentElement;
+							var clickedSection = event.target.parentElement,
+								oldSelectedSection = this._selectedSection;
 							if (clickedSection.selected === false) {
-								selectedSection.selected = false;
+								oldSelectedSection.selected = false;
 								clickedSection.selected = true;
-								selectedSection = clickedSection;
+								this._selectedSection = clickedSection;
 							}
 						});
 					}
