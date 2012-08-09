@@ -71,29 +71,25 @@
 					}
 				});
 
-				this.generatedConstructor.prototype = Object.create(Object.prototype, {
-					selected: {
-						get: function() {
-							return this._selected;
-						},
-						set: function(selected) {
-							if (this._selected !== selected) {
-								if (selected === true) {
-									this.classList.add('selected');
-									this._content.classList.add('selected');
-								}
-								else {
-									this.classList.remove('selected');
-									this._content.classList.remove('selected');
-								}
-
-								this._selected = selected;
+				this.generatedConstructor.prototype = {
+					get selected() {
+						return this._selected;
+					},
+					set selected(selected) {
+						if (this._selected !== selected) {
+							if (selected === true) {
+								this.classList.add('selected');
+								this._content.classList.add('selected');
 							}
-						},
-						enumerable: true,
-						configurable: true
+							else {
+								this.classList.remove('selected');
+								this._content.classList.remove('selected');
+							}
+
+							this._selected = selected;
+						}
 					}
-				});
+				};
 			}
 		</script>
 	</element>
