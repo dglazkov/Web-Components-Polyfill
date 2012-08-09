@@ -15,6 +15,8 @@
 					created: function(root) {
 						this.root = root;
 						var selectedSection = this.selectedSection = this.querySelector('section');
+
+						// This setTimeout is to give the child sections time to upgrade to accordion-sections. The spec describes an 'upgrade' DOM event that should fire, but it doesn't, so this is a hack for the time being.
 						setTimeout(function() {
 							selectedSection.selected = true;
 						}, 10);
