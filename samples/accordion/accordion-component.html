@@ -38,6 +38,9 @@
 							oldSelectedSection.selected = false;
 							clickedSection.selected = true;
 							this._selectedSection = clickedSection;
+
+							// Fire 'change' event
+							this.dispatchEvent(new Event('change'));
 						}
 					}
 				};
