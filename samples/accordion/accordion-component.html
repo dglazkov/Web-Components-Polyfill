@@ -13,6 +13,7 @@
 			if (this !== window) {
 				this.lifecycle({
 					created: function(root) {
+						// Set instance properties
 						this._root = root;
 						this._selectedSection = this.querySelector('section');
 
@@ -23,17 +24,23 @@
 						}, 10);
 
 						// Attach listeners
-						this.addEventListener('click', function(event) {
-							var clickedSection = event.target.parentElement,
-								oldSelectedSection = this._selectedSection;
-							if (clickedSection.selected === false) {
-								oldSelectedSection.selected = false;
-								clickedSection.selected = true;
-								this._selectedSection = clickedSection;
-							}
-						});
+						this.addEventListener('click', this._onClick);
 					}
 				});
+
+				// Set prototype
+				this.generatedConstructor.prototype = {
+					_onClick: function _onClick(event) {
+						var clickedSection = event.target.parentElement,
+							oldSelectedSection = this._selectedSection;
+
+						if (clickedSection.selected === false) {
+							oldSelectedSection.selected = false;
+							clickedSection.selected = true;
+							this._selectedSection = clickedSection;
+						}
+					}
+				};
 			}
 		</script>
 	</element>
@@ -61,7 +68,7 @@
 			if (this !== window) {
 				this.lifecycle({
 					created: function(root) {
-						// Define instance properties
+						// Set instance properties
 						this._root = root;
 						this._content = root.querySelector('div');
 						Object.defineProperties(this, {
@@ -73,6 +80,7 @@
 					}
 				});
 
+				// Set prototype
 				this.generatedConstructor.prototype = {
 					get selected() {
 						return this._selected;
