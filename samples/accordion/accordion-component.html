@@ -60,13 +60,9 @@
 				this.lifecycle({
 					created: function(root) {
 						// Define instance properties
+						this._root = root;
+						this._content = root.querySelector('div');
 						Object.defineProperties(this, {
-							_root: {
-								value: root
-							},
-							_content: {
-								value: root.querySelector('div')
-							},
 							_selected: {
 								value: false,
 								writable: true
