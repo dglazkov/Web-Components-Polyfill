@@ -183,15 +183,13 @@ scope.Loader.prototype = {
     var loader = this;
 
     request.open('GET', url);
-    request.addEventListener('readystatechange', function(e) {
-      if (request.readyState === 4) {
-        if (request.status >= 200 && request.status < 300 || request.status === 304) {
-          loader.onload && loader.onload(request.response);
-        } else {
-          loader.onerror && loader.onerror(request.status, request);
-        }
+    request.onloadend = function() {
+      if (request.status >= 200 && request.status < 300 || request.status === 304) {
+        loader.onload && loader.onload(request.response);
+      } else {
+        loader.onerror && loader.onerror(request.status, request);
       }
-    });
+    };
     request.send();
   }
 };
