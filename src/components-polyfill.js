@@ -7,6 +7,7 @@ if (!window.WebKitShadowRoot) {
   return;
 }
 
+var forEach = Array.prototype.forEach.call.bind(Array.prototype.forEach);
 
 scope.HTMLElementElement = function(name, tagName, declaration) {
   this.name = name;
@@ -94,7 +95,7 @@ scope.Declaration.prototype = {
 
     var shadowRoot = new WebKitShadowRoot(element);
     shadowRoot.host = element;
-    [].forEach.call(this.template.childNodes, function(node) {
+    forEach(this.template.childNodes, function(node) {
       shadowRoot.appendChild(node.cloneNode(true));
     });
 
@@ -136,8 +137,8 @@ scope.DeclarationFactory.prototype = {
       window[constructorName] = declaration.element.generatedConstructor;
     }
 
-    [].forEach.call(element.querySelectorAll('script'), declaration.evalScript,
-                    declaration);
+    forEach(element.querySelectorAll('script'), declaration.evalScript,
+            declaration);
     var template = element.querySelector('template');
     template && declaration.addTemplate(template);
     this.oncreate && this.oncreate(declaration);
@@ -156,7 +157,7 @@ scope.Parser.prototype = {
   parse: function(string) {
     var doc = document.implementation.createHTMLDocument();
     doc.body.innerHTML = string;
-    [].forEach.call(doc.querySelectorAll('element'), function(element) {
+    forEach(doc.querySelectorAll('element'), function(element) {
       this.onparse && this.onparse(element);
     }, this);
   }
@@ -173,7 +174,7 @@ scope.Loader.prototype = {
   onerror: null,
 
   start: function() {
-    [].forEach.call(document.querySelectorAll('link[rel=components]'), function(link) {
+    forEach(document.querySelectorAll('link[rel=components]'), function(link) {
       this.load(link.href);
     }, this);
   },
@@ -207,7 +208,7 @@ scope.run = function() {
   var factory = new scope.DeclarationFactory();
   parser.onparse = factory.createDeclaration;
   factory.oncreate = function(declaration) {
-    [].forEach.call(
+    forEach(
       document.querySelectorAll(declaration.element.extendsTagName +
                                 '[is=' + declaration.element.name + ']'),
       declaration.morph);
