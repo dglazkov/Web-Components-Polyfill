@@ -16,11 +16,15 @@
 						// Set instance properties
 						this._selectedSection = this.querySelector('section');
 
-						// This setTimeout is to give the child sections time to upgrade to accordion-sections. The spec describes an 'upgrade' DOM event that should fire, but it doesn't, so this is a hack for the time being.
-						var selectedSection = this._selectedSection;
-						setTimeout(function() {
-							selectedSection.selected = true;
-						}, 10);
+						// Select firstChild if it has been upgraded to accordion-section by looking for a value of 'false' in the 'selected' property
+						if (this._selectedSection.selected === false) {
+							this._selectedSection.selected = true;
+						}
+						else {
+							this._selectedSection.addEventListener('upgrade', function() {
+								this.selected = true;
+							});
+						}
 
 						// Attach listeners
 						this.addEventListener('click', this._onClick);
@@ -78,6 +82,11 @@
 								writable: true
 							}
 						});
+
+						this.dispatchEvent(new CustomEvent('upgrade', {
+							bubbles: false,
+							cancelable: false
+						}));
 					}
 				});
 
