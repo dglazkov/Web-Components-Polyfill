@@ -16,7 +16,7 @@
 						// Set instance properties
 						this._selectedSection = this.querySelector('.selected') || this.querySelector('section');
 
-						// Select firstChild if it has been upgraded to accordion-section by looking for a value of 'false' in the 'selected' property
+						// Select default item if it has been upgraded to accordion-section by looking for a value of 'false' in the 'selected' property
 						if (this._selectedSection.selected === false) {
 							this._selectedSection.selected = true;
 						}
