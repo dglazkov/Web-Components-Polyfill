@@ -155,7 +155,7 @@ scope.Parser.prototype = {
   onparse: null,
 
   parse: function(string) {
-    var doc = document.implementation.createHTMLDocument();
+    var doc = document.implementation.createHTMLDocument('');
     doc.body.innerHTML = string;
     forEach(doc.querySelectorAll('element'), function(element) {
       this.onparse && this.onparse(element);
