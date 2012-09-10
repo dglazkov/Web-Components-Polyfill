@@ -13,7 +13,7 @@ test('.generateConstructor must create a swizzled-prototype, HTMLElement-derived
         elementPrototype: mockElement.prototype
     }));
     equal(result.__proto__.constructor, mockElement);
-    equal(result.__proto__.__proto__.constructor, HTMLDivElement);
+    equal(result.__proto__.__proto__, HTMLDivElement.prototype);
 });
 
 
@@ -33,7 +33,7 @@ test('.addTemplate must set the this.template value', function() {
 
 test('.morph must swizzle prototype of an existing object', 4, function() {
     var mockElementPrototype = document.createElement('div');
-    var element = {};
+    var element = document.createElement('div');
     var shadowRootCreated = false;
     polyfill.Declaration.prototype.morph.call({
         element: {
@@ -85,14 +85,14 @@ test('.createShadowRoot must clone template child nodes into the newly created W
 });
 
 test('.prototypeFromTagName must return correct HTML element prototype', function() {
-    equal(polyfill.Declaration.prototype.prototypeFromTagName.call({}, 'div').constructor, HTMLDivElement);
-    equal(polyfill.Declaration.prototype.prototypeFromTagName.call({}, 'span').constructor, HTMLSpanElement);
-    equal(polyfill.Declaration.prototype.prototypeFromTagName.call({}, 'table').constructor, HTMLTableElement);
+    equal(polyfill.Declaration.prototype.prototypeFromTagName.call({}, 'div'), HTMLDivElement.prototype);
+    equal(polyfill.Declaration.prototype.prototypeFromTagName.call({}, 'span'), HTMLSpanElement.prototype);
+    equal(polyfill.Declaration.prototype.prototypeFromTagName.call({}, 'table'), HTMLTableElement.prototype);
 });
 
 test('constructor must correctly initialize instance members', function() {
     var declaration = new polyfill.Declaration('scones', 'div');
-    equal(declaration.elementPrototype.constructor, HTMLDivElement);
+    equal(declaration.elementPrototype.__proto__, HTMLDivElement.prototype);
     equal(declaration.element.name, 'scones');
     equal(declaration.element.extendsTagName, 'div');
     //strictEqual(declaration.element.declaration, declaration);
